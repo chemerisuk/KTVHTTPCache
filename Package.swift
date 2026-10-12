@@ -16,7 +16,7 @@ let package = Package(
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
     ],
     targets: [
-        // 1. Исправляем путь к серверу — он находится внутри KTVHTTPCache/CocoaHTTPServer
+        // 1. Внутренний веб-сервер библиотеки
         .target(
             name: "KTVCocoaHTTPServer",
             dependencies: [
@@ -25,22 +25,30 @@ let package = Package(
             path: "KTVHTTPCache/CocoaHTTPServer",
             publicHeadersPath: ".",
             cSettings: [
-                .headerSearchPath(".")
+                .headerSearchPath("."),
+                // Прописываем путь к заголовкам CocoaAsyncSocket в папке сборки SPM
+                .headerSearchPath("../../../CocoaAsyncSocket/Source")
             ]
         ),
-        // 2. Исправляем Layout для основного модуля
-         .target(
+        // 2. Основной модуль KTVHTTPCache со всеми поисковыми путями для подпапок
+        .target(
             name: "KTVHTTPCache",
             dependencies: [
                 "KTVCocoaHTTPServer"
             ],
             path: "KTVHTTPCache/Classes",
-            // Делаем все заголовки из папки Classes публичными
             publicHeadersPath: ".", 
             cSettings: [
                 .headerSearchPath("."),
-                .headerSearchPath(".."), // Дает доступ к KTVHTTPCache.h уровнем выше
-                .headerSearchPath("../../Framework") // Дает доступ к серверу
+                .headerSearchPath(".."), // Для доступа к зонтичному KTVHTTPCache.h
+                .headerSearchPath("../CocoaHTTPServer"), // Для доступа к соседнему серверу
+                // Добавляем все внутренние папки Classes, чтобы не сыпались ошибки вроде KTVHCPathTool.h
+                .headerSearchPath("KTVHCAudio"),
+                .headerSearchPath("KTVHCCommon"),
+                .headerSearchPath("KTVHCDataStorage"),
+                .headerSearchPath("KTVHCLOG"),
+                .headerSearchPath("KTVHTTPURLService"),
+                .headerSearchPath("KTVHCTools")
             ]
         )
     ]
