@@ -18,11 +18,18 @@ let package = Package(
     targets: [
         .target(
             name: "KTVHTTPCache",
-            dependencies: ["CocoaAsyncSocket"],
-            path: "Sources/KTVHTTPCache",
-            publicHeadersPath: ".",
+            dependencies: [
+                .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
+            ],
+            path: ".",
+            sources: [
+                "KTVHTTPCache",
+                "Framework"
+            ],
+            publicHeadersPath: "KTVHTTPCache",
             cSettings: [
-                .headerSearchPath(".")
+                .headerSearchPath("KTVHTTPCache"),
+                .headerSearchPath("Framework")
             ]
         )
     ]
