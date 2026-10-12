@@ -13,34 +13,40 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
+        .package(url: "https://github.com", from: "7.6.5")
     ],
     targets: [
-        // 1. Исправляем путь к серверу — он находится внутри KTVHTTPCache/CocoaHTTPServer
+        // 1. Внутренний веб-сервер библиотеки
         .target(
             name: "KTVCocoaHTTPServer",
             dependencies: [
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
             ],
-            path: "KTVHTTPCache/CocoaHTTPServer",
+            path: "Framework",
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath(".")
             ]
         ),
-        // 2. Исправляем Layout для основного модуля
-         .target(
+        // 2. Основной таргет со всеми внутренними путями Objective-C
+        .target(
             name: "KTVHTTPCache",
             dependencies: [
                 "KTVCocoaHTTPServer"
             ],
             path: "KTVHTTPCache/Classes",
-            // Делаем все заголовки из папки Classes публичными
             publicHeadersPath: ".", 
             cSettings: [
                 .headerSearchPath("."),
-                .headerSearchPath(".."), // Дает доступ к KTVHTTPCache.h уровнем выше
-                .headerSearchPath("../../Framework") // Дает доступ к серверу
+                .headerSearchPath(".."),
+                .headerSearchPath("../../Framework"),
+                // Добавляем пути к подпапкам внутри Classes:
+                .headerSearchPath("KTVHCAudio"),
+                .headerSearchPath("KTVHCCommon"),
+                .headerSearchPath("KTVHCDataStorage"),
+                .headerSearchPath("KTVHCLOG"),
+                .headerSearchPath("KTVHTTPURLService"),
+                .headerSearchPath("KTVHCTools")
             ]
         )
     ]
