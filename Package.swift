@@ -16,16 +16,18 @@ let package = Package(
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
     ],
     targets: [
-        // 1. Выделяем внутренний веб-сервер в отдельный таргет
         .target(
             name: "KTVCocoaHTTPServer",
             dependencies: [
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
             ],
             path: "Framework",
-            publicHeadersPath: "."
+            // Делаем заголовки доступными извне для основного модуля
+            publicHeadersPath: ".",
+            cSettings: [
+                .headerSearchPath(".")
+            ]
         ),
-        // 2. Основной таргет KTVHTTPCache, зависящий от сервера
         .target(
             name: "KTVHTTPCache",
             dependencies: [
@@ -34,6 +36,8 @@ let package = Package(
             path: "KTVHTTPCache",
             publicHeadersPath: ".",
             cSettings: [
+                .headerSearchPath("."),
+                // Даем доступ к заголовочным файлам локального веб-сервера
                 .headerSearchPath("../Framework")
             ]
         )
