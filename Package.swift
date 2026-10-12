@@ -13,7 +13,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com", from: "7.6.5")
+        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
     ],
     targets: [
         // 1. Исправляем путь к серверу — он находится внутри KTVHTTPCache/CocoaHTTPServer
