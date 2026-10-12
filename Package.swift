@@ -16,39 +16,34 @@ let package = Package(
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
     ],
     targets: [
-        // 1. Внутренний веб-сервер библиотеки
-        .target(
-            name: "KTVCocoaHTTPServer",
-            dependencies: [
-                .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
-            ],
-            path: "KTVHTTPCache/CocoaHTTPServer",
-            publicHeadersPath: ".",
-            cSettings: [
-                .headerSearchPath("."),
-                // Прописываем путь к заголовкам CocoaAsyncSocket в папке сборки SPM
-                .headerSearchPath("../../../CocoaAsyncSocket/Source")
-            ]
-        ),
-        // 2. Основной модуль KTVHTTPCache со всеми поисковыми путями для подпапок
         .target(
             name: "KTVHTTPCache",
             dependencies: [
-                "KTVCocoaHTTPServer"
+                .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
             ],
-            path: "KTVHTTPCache/Classes",
-            publicHeadersPath: ".", 
+            path: "KTVHTTPCache",
+            // Исключаем демо-файлы, если они есть
+            exclude: [],
+            // Указываем компилятору собирать код и из Classes, и из CocoaHTTPServer
+            sources: [
+                "KTVHTTPCache.h",
+                "Classes",
+                "CocoaHTTPServer"
+            ],
+            // Делаем корень публичным, чтобы заголовок KTVHTTPCache.h был доступен вашему приложению
+            publicHeadersPath: ".",
             cSettings: [
+                // Базовые пути поиска заголовков фреймворка
                 .headerSearchPath("."),
-                .headerSearchPath(".."), // Для доступа к зонтичному KTVHTTPCache.h
-                .headerSearchPath("../CocoaHTTPServer"), // Для доступа к соседнему серверу
-                // Добавляем все внутренние папки Classes, чтобы не сыпались ошибки вроде KTVHCPathTool.h
-                .headerSearchPath("KTVHCAudio"),
-                .headerSearchPath("KTVHCCommon"),
-                .headerSearchPath("KTVHCDataStorage"),
-                .headerSearchPath("KTVHCLOG"),
-                .headerSearchPath("KTVHTTPURLService"),
-                .headerSearchPath("KTVHCTools")
+                .headerSearchPath("Classes"),
+                .headerSearchPath("CocoaHTTPServer"),
+                // Глубокие пути поиска для внутренних модулей (исправляет ошибку с KTVHCPathTool.h)
+                .headerSearchPath("Classes/KTVHCAudio"),
+                .headerSearchPath("Classes/KTVHCCommon"),
+                .headerSearchPath("Classes/KTVHCDataStorage"),
+                .headerSearchPath("Classes/KTVHCLOG"),
+                .headerSearchPath("Classes/KTVHTTPURLService"),
+                .headerSearchPath("Classes/KTVHCTools")
             ]
         )
     ]
