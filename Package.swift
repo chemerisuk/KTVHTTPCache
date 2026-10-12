@@ -1,11 +1,10 @@
-// swift-tools-version:5.5
+// swift-tools-version:5.9
 import PackageDescription
 
 let package = Package(
     name: "KTVHTTPCache",
     platforms: [
-        .iOS(.v12),
-        .macOS(.v10_14)
+        .iOS(.v13)
     ],
     products: [
         .library(
@@ -13,18 +12,17 @@ let package = Package(
             targets: ["KTVHTTPCache"]
         )
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
+    ],
     targets: [
         .target(
             name: "KTVHTTPCache",
-            dependencies: [],
-            path: "KTVHTTPCache",
-            // Указываем "." вместо "include", так как заголовки лежат прямо в корне папки
-            publicHeadersPath: ".", 
+            dependencies: ["CocoaAsyncSocket"],
+            path: "Sources/KTVHTTPCache",
+            publicHeadersPath: ".",
             cSettings: [
-                // Добавляем пути для поиска внутренних заголовочных файлов вендоров
-                .headerSearchPath("../Framework"),
-                .headerSearchPath("../Vendors/CocoaAsyncSocket")
+                .headerSearchPath(".")
             ]
         )
     ]
