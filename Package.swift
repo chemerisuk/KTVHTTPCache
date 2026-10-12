@@ -13,32 +13,38 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket.git", from: "7.6.5")
+        .package(url: "https://github.com", from: "7.6.5")
     ],
     targets: [
+        // 1. Исправляем путь к серверу — он находится внутри KTVHTTPCache/CocoaHTTPServer
         .target(
             name: "KTVCocoaHTTPServer",
             dependencies: [
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket")
             ],
-            path: "Framework",
-            // Делаем заголовки доступными извне для основного модуля
+            path: "KTVHTTPCache/CocoaHTTPServer",
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath(".")
             ]
         ),
+        // 2. Исправляем Layout для основного модуля
         .target(
             name: "KTVHTTPCache",
             dependencies: [
                 "KTVCocoaHTTPServer"
             ],
             path: "KTVHTTPCache",
+            // Исключаем CocoaHTTPServer из компиляции этого таргета, так как он вынесен выше
+            exclude: ["CocoaHTTPServer"], 
+            // Явно указываем файлы для сборки, чтобы SPM не путал вложенные папки
+            sources: ["Classes"],
+            // Указываем конкретную точку входа для публичных заголовков
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("."),
-                // Даем доступ к заголовочным файлам локального веб-сервера
-                .headerSearchPath("../Framework")
+                .headerSearchPath("Classes"),
+                .headerSearchPath("CocoaHTTPServer")
             ]
         )
     ]
