@@ -29,22 +29,18 @@ let package = Package(
             ]
         ),
         // 2. Исправляем Layout для основного модуля
-        .target(
+         .target(
             name: "KTVHTTPCache",
             dependencies: [
                 "KTVCocoaHTTPServer"
             ],
-            path: "KTVHTTPCache",
-            // Исключаем CocoaHTTPServer из компиляции этого таргета, так как он вынесен выше
-            exclude: ["CocoaHTTPServer"], 
-            // Явно указываем файлы для сборки, чтобы SPM не путал вложенные папки
-            sources: ["Classes"],
-            // Указываем конкретную точку входа для публичных заголовков
-            publicHeadersPath: ".",
+            path: "KTVHTTPCache/Classes",
+            // Делаем все заголовки из папки Classes публичными
+            publicHeadersPath: ".", 
             cSettings: [
                 .headerSearchPath("."),
-                .headerSearchPath("Classes"),
-                .headerSearchPath("CocoaHTTPServer")
+                .headerSearchPath(".."), // Дает доступ к KTVHTTPCache.h уровнем выше
+                .headerSearchPath("../../Framework") // Дает доступ к серверу
             ]
         )
     ]
