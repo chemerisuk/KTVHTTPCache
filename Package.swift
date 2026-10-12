@@ -28,25 +28,33 @@ let package = Package(
                 .headerSearchPath(".")
             ]
         ),
-        // 2. Основной таргет со всеми внутренними путями Objective-C
+        // 2. Основной таргет KTVHTTPCache
         .target(
             name: "KTVHTTPCache",
             dependencies: [
                 "KTVCocoaHTTPServer"
             ],
-            path: "KTVHTTPCache/Classes",
+            path: "KTVHTTPCache",
+            // Исключаем внутренний CocoaHTTPServer, так как он скомпилирован в отдельном таргете выше
+            exclude: ["CocoaHTTPServer"],
+            // Явно перечисляем папки с исходным кодом, включая KTVHTTPCache.h из корня
+            sources: [
+                "KTVHTTPCache.h",
+                "Classes"
+            ],
+            // Делаем корень публичным, чтобы заголовок KTVHTTPCache.h был доступен извне
             publicHeadersPath: ".", 
             cSettings: [
                 .headerSearchPath("."),
-                .headerSearchPath(".."),
-                .headerSearchPath("../../Framework"),
-                // Добавляем пути к подпапкам внутри Classes:
-                .headerSearchPath("KTVHCAudio"),
-                .headerSearchPath("KTVHCCommon"),
-                .headerSearchPath("KTVHCDataStorage"),
-                .headerSearchPath("KTVHCLOG"),
-                .headerSearchPath("KTVHTTPURLService"),
-                .headerSearchPath("KTVHCTools")
+                .headerSearchPath("Classes"),
+                .headerSearchPath("../Framework"),
+                // Добавляем поисковые пути для всех вложенных папок, чтобы исправить ошибку с KTVHCPathTool.h
+                .headerSearchPath("Classes/KTVHCAudio"),
+                .headerSearchPath("Classes/KTVHCCommon"),
+                .headerSearchPath("Classes/KTVHCDataStorage"),
+                .headerSearchPath("Classes/KTVHCLOG"),
+                .headerSearchPath("Classes/KTVHTTPURLService"),
+                .headerSearchPath("Classes/KTVHCTools")
             ]
         )
     ]
